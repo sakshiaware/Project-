@@ -1,7 +1,13 @@
 package com.smc.smcsystem;
 
+import android.app.Activity;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -26,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,10 +40,14 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,7 +59,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +80,8 @@ public class AddComplaintFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    FirebaseDatabase firebaseDatabase;
     EditText title, des;
     private static final int CAMERA_REQUEST = 100;
     private static final int STORAGE_REQUEST = 200;
@@ -81,6 +97,11 @@ public class AddComplaintFragment extends Fragment {
     String name, email, uid, dp;
     DatabaseReference databaseReference;
     Button upload;
+    FusedLocationProviderClient fusedLocationProviderClient;
+    TextView lattitude,longitude,address,city,country,txtdemo;
+    Button getLocation;
+    private final static int REQUEST_CODE = 100;
+
 
     public AddComplaintFragment() {
         // Required empty public constructor
@@ -118,19 +139,38 @@ public class AddComplaintFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_add_complaint, container, false);
+
         firebaseAuth = FirebaseAuth.getInstance();
+
         View view = inflater.inflate(R.layout.fragment_add_complaint, container, false);
         title = view.findViewById(R.id.ptitle);
         des = view.findViewById(R.id.pdes);
         image = view.findViewById(R.id.imagep);
         upload = view.findViewById(R.id.pupload);
+        txtdemo = view.findViewById(R.id.txtdemo);
+
+//for location
+        lattitude = view.findViewById(R.id.lattitude);
+        longitude = view.findViewById(R.id.longitude);
+        address = view.findViewById(R.id.address);
+        city = view.findViewById(R.id.city);
+        country = view.findViewById(R.id.country);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(view.getContext());
+
+//
+
         pd = new ProgressDialog(getContext());
         pd.setCanceledOnTouchOutside(false);
         Intent intent = getActivity().getIntent();
 
         // Retrieving the user data like name ,email and profile pic using query
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-        Query query = databaseReference.orderByChild("email").equalTo(email);
+
+        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Users");
+        //databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+      /*  Query query = databaseReference.orderByChild("email").equalTo(email);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -145,7 +185,40 @@ public class AddComplaintFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+        });*/
+
+        Query query = databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    // Retrieving Data from firebase
+                   String name1 = "" + dataSnapshot1.child("name").getValue();
+                   String email1 = "" + dataSnapshot1.child("email").getValue();
+                    String dp1 = "" + dataSnapshot1.child("image").getValue();
+                    // setting data to our text view
+                    //nam.setText(name);
+                    name=name1;
+                    email=email1;
+                    dp=dp1;
+                    txtdemo.setText(email);
+                  /*  try {
+                        Glide.with(getActivity()).load(image).into(avatartv);
+                    } catch (Exception e) {
+
+                    }*/
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
+
+        System.out.println(name);
+        //txtdemo.setText(name+" "+email);
 
         // Initialising camera and storage permission
         cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -155,7 +228,10 @@ public class AddComplaintFragment extends Fragment {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 showImagePicDialog();
+                getLastLocation();
+
             }
         });
 
@@ -193,7 +269,7 @@ public class AddComplaintFragment extends Fragment {
     }
 
     private void showImagePicDialog() {
-        String options[] = {"Camera", "Gallery"};
+        String options[] = {"Camera"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Pick Image From");
         builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -227,6 +303,7 @@ public class AddComplaintFragment extends Fragment {
     }
 
     // if not given then request for permission after that check if request is given or not
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case CAMERA_REQUEST: {
@@ -237,7 +314,8 @@ public class AddComplaintFragment extends Fragment {
                     // if request access given the pick data
                     if (camera_accepted && writeStorageaccepted) {
                         pickFromCamera();
-                    } else {
+                    }
+                    else {
                         Toast.makeText(getContext(), "Please Enable Camera and Storage Permissions", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -258,8 +336,31 @@ public class AddComplaintFragment extends Fragment {
                 }
             }
             break;
+
+            }
+        if (requestCode == REQUEST_CODE){
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+
+                getLastLocation();
+
+            }else {
+
+
+                Toast.makeText(getView().getContext(),"Please provide the required permission",Toast.LENGTH_SHORT).show();
+
+            }
+
+
+
         }
-    }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+
+
+        }
 
     // request for permission to write data into storage
     private void requestStoragePermission() {
@@ -300,7 +401,7 @@ public class AddComplaintFragment extends Fragment {
     // Upload the value of blog data into firebase
     private void uploadData(final String titl, final String description) {
         // show the progress dialog box
-        pd.setMessage("Publishing Post");
+        pd.setMessage("Publishing Complaint");
         pd.show();
         final String timestamp = String.valueOf(System.currentTimeMillis());
         String filepathname = "Posts/" + "post" + timestamp;
@@ -323,14 +424,15 @@ public class AddComplaintFragment extends Fragment {
                     HashMap<Object, String> hashMap = new HashMap<>();
                     hashMap.put("uid", uid);
                     hashMap.put("uname", name);
-                    hashMap.put("uemail", email);
+                    hashMap.put("uemail",email);
                     hashMap.put("udp", dp);
                     hashMap.put("title", titl);
                     hashMap.put("description", description);
                     hashMap.put("uimage", downloadUri);
                     hashMap.put("ptime", timestamp);
                     hashMap.put("plike", "0");
-                    hashMap.put("pcomments", "0");
+                    hashMap.put("status","Pending");
+                    hashMap.put("pcomments",address.getText().toString());
 
                     // set the data into firebase and then empty the title ,description and image data
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts");
@@ -379,4 +481,57 @@ public class AddComplaintFragment extends Fragment {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+    private void getLastLocation(){
+
+        if (ContextCompat.checkSelfPermission(getView().getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+
+
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+
+                            if (location != null){
+
+
+
+                                try {
+                                    Geocoder geocoder = new Geocoder(getView().getContext(), Locale.getDefault());
+                                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                    lattitude.setText("Lattitude: "+addresses.get(0).getLatitude());
+                                    longitude.setText("Longitude: "+addresses.get(0).getLongitude());
+                                    address.setText("Address: "+addresses.get(0).getAddressLine(0));
+                                    city.setText("City: "+addresses.get(0).getLocality());
+                                    country.setText("Country: "+addresses.get(0).getCountryName());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            }
+
+                        }
+                    });
+
+
+        }else {
+
+            askPermission();
+
+
+        }
+
+
+    }
+
+    private void askPermission() {
+
+        ActivityCompat.requestPermissions((Activity) getView().getContext(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
+
+
+    }
+
+
+
 }
+

@@ -58,6 +58,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="example">Example</string>
+    <string name="title_activity_admin_dashboard">AdminDashboard</string>
 
 
 </resources>

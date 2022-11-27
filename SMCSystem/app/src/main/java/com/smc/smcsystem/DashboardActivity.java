@@ -67,7 +67,7 @@ public class DashboardActivity extends AppCompatActivity {
                     fragmentTransaction1.commit();
                     return true;
 
-                case R.id.nav_users:
+           /*    case R.id.nav_users:
                     actionBar.setTitle("Users");
                     UsersFragment fragment2 = new UsersFragment();
                     FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
@@ -81,10 +81,10 @@ public class DashboardActivity extends AppCompatActivity {
                     FragmentTransaction fragmentTransaction3 = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction3.replace(R.id.content, listFragment, "");
                     fragmentTransaction3.commit();
-                    return true;
+                    return true;*/
 
                 case R.id.nav_addComplaint:
-                    actionBar.setTitle("Add Blogs");
+                    actionBar.setTitle("Add Complaints");
                     AddComplaintFragment fragment4 = new AddComplaintFragment();
                     FragmentTransaction fragmentTransaction4 = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction4.replace(R.id.content, fragment4, "");

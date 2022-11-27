@@ -317,7 +317,7 @@ public class newComplaint extends Fragment {
 
                     // set the data into firebase and then empty the title ,description and image data
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts");
-                    databaseReference.child(timestamp).setValue(hashMap)
+                    databaseReference.child("Data").setValue(hashMap)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
