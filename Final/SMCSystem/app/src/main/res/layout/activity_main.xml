@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/bggg">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ABB5EDFA">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="150dp"
+                android:fontFamily="cursive"
+                android:shadowColor="@color/white"
+                android:shadowDx="12"
+                android:shadowDy="12"
+                android:shadowRadius="8"
+                android:text="Pothole Complaint Box"
+                android:textColor="@color/black"
+                android:textSize="40dp"
+                android:textStyle="bold|italic" />
+
+            <ImageButton
+                android:id="@+id/imagebutton1"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_below="@id/text1"
+                android:layout_marginTop="24dp"
+                android:layout_marginLeft="20dp"
+                android:padding="20dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_baseline_people_24"/>
+
+            <TextView
+                android:id="@+id/fronttxt1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text1"
+                android:layout_marginLeft="150dp"
+                android:layout_marginTop="40dp"
+                android:fontFamily="cursive"
+                android:text="Citizen"
+                android:textColor="@color/black"
+                android:textSize="35dp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/imagebutton2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_below="@id/imagebutton1"
+                android:layout_marginTop="24dp"
+                android:layout_marginLeft="20dp"
+                android:padding="20dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_baseline_person_24"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fronttxt2"
+                android:fontFamily="cursive"
+                android:layout_below="@id/fronttxt1"
+                android:text="Govt Authority"
+                android:layout_marginLeft="150dp"
+                android:layout_marginTop="90dp"
+                android:textSize="35dp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>
