@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminDashboard">
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+   android:text="View Report here"
+    android:textSize="20dp"
+    android:id="@+id/txttxt"
+    android:textColor="@color/black"
+    />
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+      android:text="  Report"
+       android:textSize="20dp"
+       android:textColor="#0000FF"
+       android:layout_toRightOf="@id/txttxt"
+      android:id="@+id/reportbtn"
+       />
+
+   <androidx.recyclerview.widget.RecyclerView
+       android:layout_width="wrap_content"
+       android:layout_below="@id/reportbtn"
+       android:id="@+id/adminrecycleview"
+       android:layout_height="wrap_content"
+       tools:listitem="@layout/adminpostrow"/>
+</RelativeLayout>

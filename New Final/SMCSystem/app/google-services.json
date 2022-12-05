@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "261241612451",
+    "project_id": "complaint-box-af227",
+    "storage_bucket": "complaint-box-af227.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261241612451:android:af61841f7bf6be13fd7716",
+        "android_client_info": {
+          "package_name": "com.smc.smcsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "261241612451-um6bknvbp5pbmov3mhd0r55t7t3cl2gc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBR15SCFT-ihcqezH5i9ZIGiE7pRQgtjDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "261241612451-um6bknvbp5pbmov3mhd0r55t7t3cl2gc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
